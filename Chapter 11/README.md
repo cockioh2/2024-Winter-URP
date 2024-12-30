@@ -46,7 +46,7 @@
 
 ### [1. Generic DRAM Command Format](#table-of-contents)
 
-![Generic DRAM Command Format](DRAM_Generic_Format.png)
+![Generic DRAM Command Format](images\DRAM_Generic_Format.png)
 
 *t*<sub>CMD</sub>: DRAM Controller에서 보낸 CMD가 DRAM Device로 도착하는데 걸리는 시간이다.
 
@@ -56,8 +56,8 @@
 
 ### [2. Timing Parameter Summary](#table-of-contents)
 
-![Table_1_1](Timing_Param_Table_1.png)
-![Table_1_2](Timing_Param_Table_2.png)
+![Table_1_1](images\Timing_Param_Table_1.png)
+![Table_1_2](images\Timing_Param_Table_2.png)
 
 *t*<sub>AL</sub>: Column Access 시에 추가되는 Latency. Posted CAS 커맨드를 지원하는 DRAM Device에 대해 설정된 값에 기반하여 CAS 커맨드의의 동작을 지연시킨다. <br>
 
@@ -99,7 +99,7 @@
 
 관련된 time 요소: *t*<sub>RCD</sub>, *t*<sub>RAS</sub>
 
-![Row Access](Row_Access.png)
+![Row Access](images\Row_Access.png)
 
 Row Access Command, 또는 Row Activation Command를 통해 DRAM Array에 있는 데이터를 S/A로 이동시키고, DRAM Array에 데이터를 Restore한다.
 Command 입력 후 *t*<sub>RCD</sub> 이후에 활성화된 데이터의 모든 Row가 S/A와 연결된다. 그 후 Column Read나 Write를 통해 S/A와 메모리 컨트롤러간에 데이터를 주고 받는다. *t*<sub>RAS</sub>는 *t*<sub>RCD</sub> + 데이터 Restore 시간이다. *t*<sub>RAS</sub> 이후, S/A가 동일한 뱅크 내에 있는 다른 Row Access를 수행하기 위한 Precharge가 완료된다.
@@ -108,7 +108,7 @@ Command 입력 후 *t*<sub>RCD</sub> 이후에 활성화된 데이터의 모든 
 
 관련된 time 요소: *t*<sub>CAS</sub>, *t*<sub>BURST</sub>, *t*<sub>CCD</sub>
 
-![Column_Read](Column_read.png)
+![Column_Read](images\Column_read.png)
 
 ### [5. Column Write Command](#table-of-contents)
 
