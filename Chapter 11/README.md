@@ -138,9 +138,92 @@ Command 입력 후 *t*<sub>RCD</sub> 이후에 활성화된 데이터의 모든 
 
 ![Column_Read](images/Column_read.png)
 
+
+- 전체 동작 과정<br>
+
+1단계: Command & Address 전달
+메모리 컨트롤러에서 Column Read 명령과 Column 주소를 DRAM으로 전달한다.
+DRAM 내부의 디코더(Decoder)가 이 정보를 해석해 데이터를 읽을 준비를 시작한다.
+
+2단계: 첫 번째 데이터 읽기 (tCAS의 시작)
+DRAM은 활성화된 Row의 특정 Column 데이터를 센스 앰프에서 읽어 준비한다.
+이 준비 과정이 끝난 후 데이터는 I/O 게이팅을 통해 데이터 버스로 전송된다.
+tCAS (Column Access Strobe Latency)는 Read 명령이 입력된 후, 첫 번째 데이터가 데이터 버스에 나타날 때까지 걸리는 시간이다.
+
+3단계: 연속 데이터 읽기 (tBURST)
+DRAM은 한 번의 명령으로 데이터를 버스트(Burst) 단위로 전송한다.
+첫 번째 데이터 이후, 두 번째 데이터가 같은 Row의 다음 Column에서 연속적으로 전송된다.
+tBURST (Burst Duration)는 데이터를 연속적으로 데이터 버스로 전송하는 시간이다.
+
+4단계: 데이터 전송 완료
+준비된 데이터는 데이터 버스를 통해 메모리 컨트롤러로 전송된다.
+이 과정은 tBURST 내에서 모든 데이터를 연속적으로 처리하며 종료된다.
+
+- 주요 타이밍 파라미터<br>
+
+1) tCAS (Column Access Strobe Latency)
+tCAS는 칼럼 Read 명령 입력 후, 첫 번째 데이터가 데이터 버스에 나타날 때까지 걸리는 시간이다.
+DRAM 내부에서 데이터를 준비하고 출력하는 데 필요한 초기 대기 시간이다.
+예를 들어, tCAS가 10 클럭이라면, 명령 입력 후 10 클럭 동안 대기한 후 데이터가 버스에 출력된다.
+
+2) tBURST (Burst Duration)
+tBURST는 한 번의 Column Read 명령에서 데이터를 연속적으로 전송하는 시간이다.
+DRAM은 데이터를 버스트 단위로 묶어서 전송한다.
+예를 들어, tBURST가 4 클럭이라면, DRAM은 첫 번째 데이터 이후 4 클럭 동안 데이터를 연속적으로 전송한다.
+
+3) tCCD (Column-to-Column Delay)
+tCCD는 두 칼럼 명령 간에 필요한 최소 대기 시간이다.
+DRAM 내부의 데이터 충돌을 방지하고, 칼럼 간 명령 간격을 유지한다.
+예를 들어, tCCD가 2 클럭이라면, 첫 번째 칼럼 명령과 두 번째 칼럼 명령 간에는 최소 2 클럭의 대기 시간이 필요하다.
+
+
+
 ### [5. Column Write Command](#table-of-contents)
 
 관련된 time 요소: *t*<sub>CWD</sub>, *t*<sub>BURST</sub>, *t*<sub>WTR</sub>, *t*<sub>WR</sub>
+
+
+![image](https://github.com/user-attachments/assets/568264f7-238b-4594-a981-8155078c643a)
+
+- 전체 동작 과정<br>
+
+1단계: Command & Address 전달
+메모리 컨트롤러에서 Column Write 명령과 Column 주소를 DRAM으로 전달한다.
+DRAM은 이 명령을 해석하고 데이터를 받을 준비를 한다.<br>
+
+2단계: tCWD 대기 후 데이터 전송 시작
+Write 명령이 전달된 후, 데이터가 데이터 버스에 배치되기까지 tCWD(Column Write Delay)만큼 대기한다.
+이후 메모리 컨트롤러는 데이터를 데이터 버스를 통해 DRAM으로 전송한다.<br>
+
+3단계: 데이터 쓰기 (tBURST 구간)
+DRAM은 데이터를 버스트 단위로 센스 앰프에 저장하고, DRAM 셀에 기록한다.
+이 데이터 전송이 tBURST (Burst Duration) 동안 진행된다.<br>
+
+4단계: 안정화 (tWR 대기)
+데이터가 DRAM 셀에 안정적으로 기록되기 위해 tWR (Write Recovery) 동안 대기해야 한다.
+tWR 시간이 끝나기 전에는 Precharge 명령을 실행할 수 없다. 
+<br>
+
+- 주요 타이밍 파라미터<br>
+
+1) tCWD (Column Write Delay)
+tCWD는 Write 명령이 DRAM으로 전달된 후, 메모리 컨트롤러가 데이터를 데이터 버스에 배치하기까지 걸리는 시간이다.
+SDRAM: tCWD = 0 (명령과 동시에 데이터 전송 시작).
+DDR: tCWD = 1 클럭.
+DDR2: tCWD = tCAS - tCMD.<br>
+
+2) tBURST (Burst Duration)
+tBURST는 데이터를 버스트 단위로 연속적으로 데이터 버스를 통해 전송하는 시간이다.
+이 시간 동안 DRAM은 데이터 전송을 안정적으로 처리한다.<br>
+
+3) tWR (Write Recovery)
+tWR은 DRAM 셀에 데이터를 안정적으로 쓰고 나서, Precharge 명령을 실행하기 전까지의 최소 대기 시간이다.
+예를 들어, tWR이 10ns라면, Write 작업 후 최소 10ns 동안 대기한 후 Precharge 명령을 실행할 수 있다.<br>
+
+4) tWTR (Write-to-Read Turnaround)
+tWTR은 Write 작업 후 I/O 게이팅 자원을 초기화하고, Read 명령을 실행하기 위해 필요한 최소 대기 시간이다.
+예를 들어, tWTR이 5 클럭이라면, Write 작업 후 최소 5 클럭 동안 대기한 후 Read 명령을 실행할 수 있다.<br>
+
 
 ### [6. Precharge Command](#table-of-contents)
 
