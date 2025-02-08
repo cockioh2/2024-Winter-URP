@@ -1,0 +1,11 @@
+1. PrIDE만
+"PrIDE", "PrIDE+RFM16", "PrIDE+RFM40", "PrIDE+PRAC", "PrIDE+PRAC+RFM16", "PrIDE+PRAC+RFM40"
+
+2. MINT만
+"MINT", "MINT+RFM16", "MINT+RFM40", "MINT+PRAC", "MINT+PRAC+RFM16", "MINT+PRAC+RFM40"
+
+3. PRAC 없는 거
+"PARA", "Hydra", "TWiCe-Ideal", "Graphene", "OracleRH", "RRS",  "NoDefense", "PrIDE", "MINT"
+
+4. PRAC 있는 거
+"PrIDE+PRAC", "MINT+PRAC", "PARA+PRAC", "Hydra+PRAC", "TWiCe-Ideal+PRAC", "Graphene+PRAC", "OracleRH+PRAC", "RRS+PRAC", "NoDefense+PRAC"

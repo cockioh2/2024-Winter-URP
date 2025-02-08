@@ -1,0 +1,5 @@
+ramulator2_modified_projects/.gitignore = `
+ramulator2_modified_projects/rh_study/results_multicore
+ramulator2_modified_projects/rh_study/results_singlecore
+ramulator2_modified_projects/rh_study/cputraces
+ramulator2_modified_projects/rh_study/__pycache__
