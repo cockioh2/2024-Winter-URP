@@ -1,53 +1,61 @@
 Frontend:
-  impl: BHO3
-  clock_ratio: 8
-  llc_capacity_per_core: 2MB
-  llc_num_mshr_per_core: 16
-  num_expected_insts: 100000000
-  traces: 
-    - test.trace1
-
   Translation:
     impl: RandomTranslation
     max_addr: 17179869184
-              
-
+  clock_ratio: 8
+  impl: BHO3
+  llc_capacity_per_core: 2MB
+  llc_num_mshr_per_core: 16
+  num_expected_insts: 100000000
+  traces:
+  - test.trace1
 MemorySystem:
-  impl: BHDRAMSystem
-  clock_ratio: 3
+  AddrMapper:
+    impl: RoBaRaCoCh_with_rit
+  BHDRAMController:
+    BHScheduler:
+      impl: BHScheduler
+    RefreshManager:
+      impl: AllBank
+    RowPolicy:
+      cap: 4
+      impl: ClosedRowPolicy
+    impl: BHDRAMController
+    plugins:
+
+    - ControllerPlugin:
+        commands_to_count:
+        - ACT
+        - PRE
+        - VRR
+        - VRR_T
+        - RFMab
+        - RFMsb
+        - DRFMab
+        - DRFMsb
+        impl: CommandCounter
+        path: ./test.cmds1
+    - ControllerPlugin:
+        impl: Security
+        rh_threshold: 200
+
+
 
 
   DRAM:
+    RFM:
+      BRC: 2
+    current:
+      preset: Default
+    drampower_enable: true
     impl: DDR5-VRR-T
     org:
-      preset: DDR5_16Gb_x8
       channel: 1
+      preset: DDR5_16Gb_x8
       rank: 2
     timing:
       preset: DDR5_3200AN
-
-  BHDRAMController:
-    impl: BHDRAMController
-    Scheduler:
-      impl: BHScheduler
-    RowPolicy:
-      impl: ClosedRowPolicy
-      cap: 4
-    RefreshManager:
-      impl: AllBank
-    plugins:
-      - ControllerPlugin:
-          impl: CommandCounter
-          path: ./test.cmds1
-          commands_to_count:
-            - ACT
-            - PRE
-            - VRR
-            - VRR_T
-            - RFMab
-            - RFMsb
-            - DRFMab
-            - DRFMsb
-
-  AddrMapper:
-    impl: RoBaRaCoCh_with_rit
+    voltage:
+      preset: Default
+  clock_ratio: 3
+  impl: BHDRAMSystem

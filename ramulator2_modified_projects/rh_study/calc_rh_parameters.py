@@ -44,18 +44,18 @@ def get_rh_parameters(mitigation, tRH):
         insert_probability = 1 / int(floor(tREFI / tRC))
         tRH_s = (-38.93) / (log(1-insert_probability * (1 - 0.119))) + fifo_max_size * (tREFI / tRC)
         if ("RFM" in mitigation):
-            rfm_thresh = 16
-            return fifo_max_size, insert_probability, tRH_s, rfm_thresh
-        return fifo_max_size, insert_probability, tRH_s
-            
-    elif(mitigation == "MINT"):
+            m_raammt = 200
+            m_raaimt = 40
+            return fifo_max_size, insert_probability, tRH_s, m_raammt, m_raaimt
+        return fifo_max_size, insert_probability, tRH_s       
+    elif("MINT" in mitigation ):
         tRC = 55
         tREFI = 3900
         access_max_count = int(floor(tREFI / tRC))
-        return access_max_count
         
-    elif(mitigation == "MINT2"):
-        tRC = 55
-        tREFI = 3900
-        access_max_count = int(floor(tREFI / tRC))
+        if ("RFM" in mitigation):
+            m_raammt = 80
+            m_raaimt = 16
+            access_max_count = 16
+            return access_max_count, m_raammt, m_raaimt
         return access_max_count

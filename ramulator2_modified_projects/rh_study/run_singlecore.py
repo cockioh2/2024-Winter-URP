@@ -29,9 +29,9 @@ trace_names = list(set(trace_names))
 
 for trace_name in trace_names:
     #for mitigation in ["PARA", "Hydra", "TWiCe-Ideal", "Graphene", "OracleRH", "RRS", "NoDefence"]:
-    for mitigation in ["MINT2"]:
+    for mitigation in ["MINT+PRAC", "PrIDE+PRAC"]:
         #for tRH in [2000, 1000, 500, 200, 100, 50, 20, 10]:
-        for tRH in [10]:
+        for tRH in [400]:
             for path in [output_path + "/" + mitigation + "/stats", output_path + "/" + mitigation + "/configs", output_path + "/" + mitigation + "/cmd_count", output_path + "/" + mitigation + "/dram_trace"]:
                 if not os.path.exists(path):
                     os.makedirs(path)
@@ -46,7 +46,7 @@ for trace_name in trace_names:
             
             config['Frontend']['traces'] = [trace_path + "/" + trace_name]
             config['MemorySystem']['BHDRAMController']['plugins'][0]['ControllerPlugin']['path'] = cmd_count_filename
-            # config['MemorySystem']['BHDRAMController']['plugins'].append({'ControllerPlugin' : {'impl': 'TraceRecorder', 'path': dram_trace_filename}})
+            # config['MemorySystem']['Controller']['plugins'].append({'ControllerPlugin' : {'impl': 'TraceRecorder', 'path': dram_trace_filename}})
             if(mitigation == "PARA"):
                 threshold = get_rh_parameters(mitigation, tRH)
                 config['MemorySystem']['BHDRAMController']['plugins'].append({'ControllerPlugin' : {'impl': 'PARA', 'threshold': threshold}})
@@ -67,19 +67,21 @@ for trace_name in trace_names:
                 config['MemorySystem']['BHDRAMController']['plugins'].append({'ControllerPlugin' : {'impl': 'RRS', 'num_hrt_entries': num_hrt_entries, 'num_rit_entries': num_rit_entries, 'rss_threshold': rss_threshold, 'reset_period_ns': reset_period_ns}})
             elif("PrIDE" in mitigation):
                 if ("RFM" in mitigation):
-                    fifo_max_size, insert_probability, tRH_s, rfm_thresh = get_rh_parameters(mitigation, tRH)
-                    config['MemorySystem']['BHDRAMController']['plugins'].append({'ControllerPlugin' : {'impl': 'PrIDE', 'fifo_max_size': fifo_max_size, 'insert_probability': insert_probability}})
-                    config['MemorySystem']['BHDRAMController']['plugins'].append({'ControllerPlugin' : {'impl': 'RFMManager','rfm_thresh': rfm_thresh}})
+                  fifo_max_size, insert_probability, tRH_s, m_raammt, m_raaimt = get_rh_parameters(mitigation, tRH)
+                  config['MemorySystem']['BHDRAMController']['plugins'].append({'ControllerPlugin' : {'impl': 'PrIDE', 'fifo_max_size': fifo_max_size, 'insert_probability': insert_probability}})
+                  config['MemorySystem']['BHDRAMController']['plugins'].append({'ControllerPlugin' : {'impl': 'RFMManager','m_raammt': m_raammt, 'm_raaimt': m_raaimt}})
                 else:
-                    fifo_max_size, insert_probability, tRH_s = get_rh_parameters(mitigation, tRH)
-                    config['MemorySystem']['BHDRAMController']['plugins'].append({'ControllerPlugin' : {'impl': 'PrIDE', 'fifo_max_size': fifo_max_size, 'insert_probability': insert_probability}})
-            elif(mitigation == "MINT"):
-                access_max_count = get_rh_parameters(mitigation, tRH)
-                config['MemorySystem']['BHDRAMController']['plugins'].append({'ControllerPlugin' : {'impl': 'MINT', 'access_max_count': access_max_count}})
-            elif(mitigation == "MINT2"):
-                access_max_count = get_rh_parameters(mitigation, tRH)
-                config['MemorySystem']['BHDRAMController']['plugins'].append({'ControllerPlugin' : {'impl': 'MINT2', 'access_max_count': access_max_count}})
-            elif(mitigation == "NoDefence"):
+                  fifo_max_size, insert_probability, tRH_s = get_rh_parameters(mitigation, tRH)
+                  config['MemorySystem']['BHDRAMController']['plugins'].append({'ControllerPlugin' : {'impl': 'PrIDE', 'fifo_max_size': fifo_max_size, 'insert_probability': insert_probability}})
+            elif("MINT" in mitigation ):
+                if ("RFM" in mitigation):
+                    access_max_count, m_raammt, m_raaimt = get_rh_parameters(mitigation, tRH)
+                    config['MemorySystem']['BHDRAMController']['plugins'].append({'ControllerPlugin' : {'impl': 'MINT', 'access_max_count': access_max_count}})
+                    config['MemorySystem']['BHDRAMController']['plugins'].append({'ControllerPlugin' : {'impl': 'RFMManager','m_raammt': m_raammt, 'm_raaimt': m_raaimt}})
+                else:
+                    access_max_count = get_rh_parameters(mitigation, tRH)
+                    config['MemorySystem']['BHDRAMController']['plugins'].append({'ControllerPlugin' : {'impl': 'MINT', 'access_max_count': access_max_count}})
+            elif(mitigation == "NoDefense"):
                 pass
             cmd = "./ramulator2 -c '" + str(config) + "' > " + result_filename + " 2>&1 &"           
             
